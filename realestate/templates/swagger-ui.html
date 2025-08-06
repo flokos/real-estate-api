@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real Estate API Docs</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'drf-yasg/swagger-ui-dist/swagger-ui.css' %}">
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="{% static 'drf-yasg/swagger-ui-dist/swagger-ui-bundle.js' %}"></script>
+<script src="{% static 'drf-yasg/swagger-ui-dist/swagger-ui-standalone-preset.js' %}"></script>
+<!--We create a custom swagger ui page to manually add with js the 'Bearer' prefix in the Authorization header of all requests through swagger -->
+<script>
+    window.onload = function() {
+        const ui = SwaggerUIBundle({
+            url: "{% url 'schema-json' %}",
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            layout: "BaseLayout",
+            requestInterceptor: (req) => {
+                if (req.headers.Authorization && !req.headers.Authorization.startsWith('Bearer ')) {
+                    req.headers.Authorization = 'Bearer ' + req.headers.Authorization;
+                }
+                return req;
+            }
+        });
+        window.ui = ui;
+    };
+</script>
+</body>
+</html>
